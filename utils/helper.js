@@ -1,0 +1,1 @@
+export const sortByTime = (a, b) => (new Date(parseInt(b)) - new Date(parseInt(a)))

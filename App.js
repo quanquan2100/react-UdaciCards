@@ -3,7 +3,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './reducers'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
-import { StyleSheet, Text, View, Platform, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Platform, StatusBar, ScrollView } from 'react-native';
 import { TabNavigator, StackNavigator } from 'react-navigation'
 import { Constants } from 'expo'
 import { purple, white } from './utils/colors'
@@ -14,9 +14,11 @@ import CreateQuestion from "./components/CreateQuestion";
 import DeckDetail from "./components/DeckDetail";
 import Quiz from "./components/Quiz";
 import CreateDeck from "./components/CreateDeck";
+import { getDecks } from "./utils/api"
+import { fetchDecks } from "./actions"
 
-// 设置状态栏
-function UdaciStatusBar ({backgroundColor, ...props}) {
+// 状态栏设置
+function UdaciStatusBar({ backgroundColor, ...props }) {
   return (
     <View style={{ backgroundColor, height: Constants.statusBarHeight }}>
       <StatusBar translucent backgroundColor={backgroundColor} {...props} />
@@ -24,6 +26,7 @@ function UdaciStatusBar ({backgroundColor, ...props}) {
   )
 }
 
+// tab 导航设置
 const Tabs = TabNavigator({
   DecksList: {
     screen: DecksList,
@@ -59,7 +62,7 @@ const Tabs = TabNavigator({
   }
 })
 
-
+// 堆栈导航设置
 const MainNavigator = StackNavigator({
   Home: {
     screen: Tabs,
@@ -109,28 +112,28 @@ const MainNavigator = StackNavigator({
 
 var store = createStore(reducer);
 
+
 export default class App extends React.Component {
   componentDidMount() {
     // 设置通知提醒
     // setLocalNotification()
+    
+    getDecks()
+      .then((data) => {
+        store.dispatch(fetchDecks(data))
+      })
   }
   render() {
     return (
       <Provider store={store}>
         <View style={{flex: 1}}>
           <UdaciStatusBar backgroundColor={purple} barStyle="light-content" />
+          
           <MainNavigator />
+
         </View>
       </Provider>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

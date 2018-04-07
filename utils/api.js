@@ -8,26 +8,80 @@ import { AsyncStorage } from 'react-native'
 
 const DECKS_STORAGE_KEY = "decks";
 
+
+// Generate a unique token for storing your bookshelf data on the backend server.
+let token = null;
+AsyncStorage.getItem("token")
+  .then((value) => {
+    // if (true) {
+    if (value === null) {
+      const defaultData = {
+        ["1523097278489"]: {
+          title: 'React',
+          questions: [
+            {
+              id: "1523097337115",
+              question: 'What is React?',
+              answer: 'A library for managing user interfaces'
+            },
+            {
+              id: "1523097380046",
+              question: 'Where do you make Ajax requests in React?',
+              answer: 'The componentDidMount lifecycle event'
+            }
+          ]
+        },
+        ["1523097306818"]: {
+          title: 'JavaScript',
+          questions: [
+            {
+              id: "1523097358286",
+              question: 'What is a closure?',
+              answer: 'The combination of a function and the lexical environment within which that function was declared.'
+            }
+          ]
+        }
+      };
+      return AsyncStorage.setItem(DECKS_STORAGE_KEY, JSON.stringify(defaultData))
+        .then((data) => (AsyncStorage.setItem("token", Math.random().toString(36).substr(-8))))
+    } else {
+      return value;
+    }
+  }).then((value) => {
+    token = value;
+  })
+
+
 export function getDecks () {
   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
+    .then(data => (JSON.parse(data)))
 }
 
-export function getDeck (id) {
+// export function getDeck (id) {
+//   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
+//     .then(data => {
+//       //获取特定 id 的值
+//       if(data){
+//       }
+//       return data;
+//     })
+// }
+
+export function saveDeckTitle (title) {
+  const id = Date.now() + "";
   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
     .then(data => {
-      //获取特定 id 的值
-      //
-      return data;
+      const value = JSON.parse(data)
+      value[id] = {
+        title,
+        questions: []
+      }
+      return AsyncStorage.setItem(DECKS_STORAGE_KEY, JSON.stringify(value));
+    }).then(data => {
+      return {id, title}
     })
 }
-export function saveDeckTitle (id) {
-  return AsyncStorage.getItem(DECKS_STORAGE_KEY)
-    .then(data => {
-      // 创建卡片级
-      //
-      return data;
-    })
-}
+
 export function addCardToDeck (id, card) {
   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
     .then(data => {
