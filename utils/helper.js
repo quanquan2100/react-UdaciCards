@@ -38,32 +38,19 @@ export function setLocalNotification () {
           .then(({ status }) => {
             if (status === 'granted') {
 
-
-              // let t = new Date();
-              // t.setSeconds(t.getSeconds() + 10);
-              // const schedulingOptions = {
-              //   time: t, // (date or number) — A Date object representing when to fire the notification or a number in Unix epoch time. Example: (new Date()).getTime() + 1000 is one second from now.
-              //   repeat: repeat
-              // };
-
-
-
-
               Notifications.cancelAllScheduledNotificationsAsync()
 
               let tomorrow = new Date()
               tomorrow.setSeconds(tomorrow.getSeconds() + 30);
-              // tomorrow.setDate(tomorrow.getDate() + 1)
-              // tomorrow.setHours(20)
-              // tomorrow.setMinutes(0)
-              // debugger;
-              // 
+              tomorrow.setDate(tomorrow.getDate() + 1)
+              tomorrow.setHours(20)
+              tomorrow.setMinutes(0)
 
               Notifications.scheduleLocalNotificationAsync(
                 createNotification(),
                 {
-                  time: (new Date()).getTime() + 1000,
-                  repeat: 'minute',
+                  time: tomorrow,
+                  repeat: 'day',
                 }
               )
 
