@@ -9,24 +9,24 @@ import { fetchDecks, setCurrentDeck } from "../actions"
 class DecksList extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      bounceValue: new Animated.Value(1),
+    }
   }
 
   componentDidMount() {
-    // console.log("props", this.props)
-    // const { dispatch } = this.props;
-    // console.log("dispatch is", dispatch)
-    // getDecks()
-    //   .then((data) => {
-    //     console.log('data ',data);
-
-    //     dispatch(fetchDecks(data))
-    //   })
-    // this.props.fetchDecks();
+    const { navigation, decks } = this.props;
+    const params = navigation.state.params;
+    if (params && params.enter) {
+      this.props.selectDeck(params.enter)
+      navigation.navigate('DeckDetail', { name: decks[params.enter].title })
+    }
   }
 
   render() {
     const { decks, decksArr, selectDeck, navigation } = this.props;
-    
+    const { bounceValue } = this.state;
     return (
       <ScrollView>
         <View style={[styles.header]} >
@@ -34,18 +34,29 @@ class DecksList extends React.Component {
         </View>
         <View style={styles.deckContainer} >
           {
-            decksArr.map((deckId) => (
-              <TouchableOpacity 
-                style={[styles.deck, styles.shadow]} 
-                key={deckId} 
-                onPress={() => {
-                  selectDeck(deckId)
-                  navigation.navigate('DeckDetail', { name: decks[deckId].title, id: deckId })
-                } }>
-                <Text style={styles.deckTitle} >{decks[deckId].title}</Text>
-                <Text style={styles.deckInfo} >{decks[deckId].questions.length} Cards</Text>
-              </TouchableOpacity>
-            ))
+
+            decksArr.map((deckId) => {
+              let animateVal = new Animated.Value(1);
+              return (
+                <Animated.View 
+                  style={[styles.deck, styles.shadow, {transform: [{scale: animateVal}]} ]}
+                  key={deckId} 
+                  >
+                  <TouchableOpacity onPress={() => {
+                    Animated.sequence([
+                      Animated.timing(animateVal, { duration: 100, toValue: 1.04}),
+                      Animated.spring(animateVal, { toValue: 1, friction: 4})
+                    ]).start(() => {
+                      selectDeck(deckId)
+                      navigation.navigate('DeckDetail', { name: decks[deckId].title })
+                    })
+                  } } style={styles.container}>
+                  <Text style={styles.deckTitle} >{decks[deckId].title}</Text>
+                  <Text style={styles.deckInfo} >{decks[deckId].questions.length} Cards</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              )
+            })
           }
         </View>
       </ScrollView>
@@ -65,7 +76,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontWeight: "0.4",
+    fontWeight: "600",
   },
   shadow: {
     shadowColor: black,
@@ -78,7 +89,7 @@ const styles = StyleSheet.create({
   deck: {
     height: 200,
     margin: 10,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     backgroundColor: white,
     borderRadius: 5,
@@ -90,6 +101,11 @@ const styles = StyleSheet.create({
   deckInfo: {
     color: bluegray,
   },
+  container: {
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 function mapStateToProps ({globalReducer, deckReducer}) {

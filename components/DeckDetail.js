@@ -3,15 +3,16 @@ import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet, Animated, 
 import { connect } from 'react-redux'
 // import { getDecks } from "../utils/api"
 import { purple, white, bluegray, darkgray, black , yellow} from '../utils/colors'
+import { startQuiz } from "../actions"
 
 class DeckDetail extends React.Component {
   static navigationOptions = ({ navigation }) => {
-    const { name } = navigation.state.params
-
+    const { params } = navigation.state;
+    
     return {
-      title: name
+      title: params ? params.name : 'Deck Detail',
     }
-  }
+  };
 
   render() {
     const { navigation, decks, currentDeck } = this.props;
@@ -29,7 +30,9 @@ class DeckDetail extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btn, {backgroundColor: yellow, color: white}]}
-          onPress={() => navigation.navigate('Quiz')}
+          onPress={() => {
+            navigation.navigate('Quiz')
+          }}
           underlayColor='#fff'>
           <Text style={[styles.btnText, {color: white}]}>Start Quiz</Text>
         </TouchableOpacity>

@@ -20,6 +20,11 @@ AsyncStorage.getItem("token")
           title: 'React',
           questions: [
             {
+              id: "1523148082692",
+              question: '这是个判断题吗?',
+              answer: true
+            },
+            {
               id: "1523097337115",
               question: 'What is React?',
               answer: 'A library for managing user interfaces'
@@ -82,32 +87,18 @@ export function saveDeckTitle (title) {
     })
 }
 
-export function addCardToDeck (id, card) {
+export function addCardToDeck (card, deckId) {
+  const id = Date.now() + "";
+  const newCard = {...card, id};
   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
+    .then(data => JSON.parse(data))
     .then(data => {
-      // 创建问题卡片
-      //
-      return data;
-    })
+      data[deckId].questions.push({
+        ...card,
+        id
+      })
+      return JSON.stringify(data)
+    }).then(data => AsyncStorage.setItem(DECKS_STORAGE_KEY, data))
+    .then(() => newCard)
 }
 
-// export function fetchCalendarResults () {
-//   return AsyncStorage.getItem(CALENDAR_STORAGE_KEY)
-//     .then(formatCalendarResults)
-// }
-
-// export function submitEntry ({ entry, key }) {
-//   return AsyncStorage.mergeItem(CALENDAR_STORAGE_KEY, JSON.stringify({
-//     [key]: entry
-//   }))
-// }
-
-// export function removeEntry (key) {
-//   return AsyncStorage.getItem(CALENDAR_STORAGE_KEY)
-//     .then((results) => {
-//       const data = JSON.parse(results)
-//       data[key] = undefined
-//       delete data[key]
-//       AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(data))
-//     })
-// }

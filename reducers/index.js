@@ -5,6 +5,8 @@ import {
   FETCH_DECKS,
   NEW_DECK,
   SET_CURRENT_DECK,
+  NEW_CARD,
+  // START_QUIZ
 } from "../actions"
 
 /**
@@ -12,7 +14,8 @@ import {
  */
 
 const globalState = {
-  currentDeck: ""
+  currentDeck: "",
+  // currentCard: 0,
 }
 
 function globalReducer(state = globalState, action) {
@@ -57,6 +60,14 @@ function deckReducer(state = deckState, action) {
       return {
         ...state,
         decksArr: copy,
+        decks: copy2
+      }
+    case NEW_CARD:
+      copy2 = Object.assign({}, state.decks)
+      copy2[action.deckId].questions = state.decks[action.deckId].questions.concat()
+      copy2[action.deckId].questions.push(action.card)
+      return {
+        ...state,
         decks: copy2
       }
     default:

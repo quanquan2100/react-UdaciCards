@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet, Animated, 
 import { connect } from 'react-redux';
 import { newDeck } from "../actions";
 import { saveDeckTitle } from "../utils/api"
+import { purple, white, bluegray, darkgray, black , yellow} from '../utils/colors'
 
 class CreateDeck extends React.Component {
   constructor(props) {
@@ -18,21 +19,57 @@ class CreateDeck extends React.Component {
     const { title } = this.state;
     const { addDeck } = this.props;
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center',}} >
-        <Text>What is the title of your new deck?</Text>
-        <TextInput autoFocus style={{height: 40, borderColor: 'gray', borderWidth: 1, width: 200}} ref="input" />
-        <Button
-            onPress={() => {
-              addDeck(this.refs.input._lastNativeText.trim())
-            }}
-            title="incorrect"
-            color="#841584"
-            accessibilityLabel="incorrect"
-          />
+      <View style={styles.container} >
+        <Text style={styles.btnText}>What is the title of your new deck?</Text>
+        <TextInput autoFocus style={styles.input} ref="input" />
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => {
+            if (!this.refs.input._lastNativeText) {
+              return;
+            }
+            addDeck(this.refs.input._lastNativeText.trim())
+          }}
+          underlayColor='#fff'>
+          <Text style={[styles.btnText, {color: white}]}>Create</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: yellow, 
+    borderWidth: 1,
+    backgroundColor: white,
+    margin: 15,
+    width: 300,
+    borderRadius: 3,
+  },
+  btnText: {
+    fontSize: 20,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  btn: {
+    borderColor: yellow,
+    padding: 15,
+    width: 220,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    marginTop: 50,
+    backgroundColor: yellow,
+  },
+});
 
 function mapStateToProps ({globalReducer, deckReducer}) {
   return {
@@ -51,7 +88,7 @@ function mapDispatchToProps (dispatch, { navigation }) {
       saveDeckTitle(title)
         .then((data) => {
           dispatch(newDeck(data.id, data.title));
-          navigation.navigate("Home", { entryId: "1 " })
+          navigation.navigate("Home", { enter: data.id })
         })
     }
   }
